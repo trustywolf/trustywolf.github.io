@@ -1,0 +1,576 @@
+<?xml-stylesheet href="/rss.xsl" type="text/xsl"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>オオカミのメモ帳</title><link>https://trustywolf.xyz/</link><description>Recent content on オオカミのメモ帳</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><copyright>2014-2022 Wolf Network Lab.</copyright><lastBuildDate>Thu, 01 Oct 2020 13:15:00 +0900</lastBuildDate><atom:link href="https://trustywolf.xyz/index.xml" rel="self" type="application/rss+xml"/><item><title>Hello, World!</title><link>https://trustywolf.xyz/posts/0x00-hello-world/</link><pubDate>Thu, 01 Oct 2020 13:15:00 +0900</pubDate><guid>https://trustywolf.xyz/posts/0x00-hello-world/</guid><description>オオカミのメモ帳 https://trustywolf.xyz/posts/0x00-hello-world/ -&lt;p>&lt;code>Update: 2022-07-02 升级Hugo至最新版并更新相关内容。&lt;/code>&lt;/p>
+&lt;p>0202年了，终于克服懒懒的毛病，重新开始写博客了。这篇文章主要记录博客搭建的过程，并针对本博客使用的静态网页生成器Hugo进行一些功能测试。&lt;/p>
+&lt;p>运行环境： Red Hat Enterprise Linux 9&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ cat /etc/redhat-release
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Red Hat Enterprise Linux release 9.0 &lt;span style="color:#f92672">(&lt;/span>Plow&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ uname -r
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>5.14.0-70.17.1.el9_0.x86_64
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="hugo的安装">Hugo的安装&lt;/h1>
+&lt;p>2022年7月2日时点，Hugo官方最新的版本为&lt;code>0.101.0&lt;/code>，EPEL9源里没有Hugo，这里直接安装Hugo官方提供的二进制包。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ echo $PATH
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/home/trustywolf/.local/bin:/home/trustywolf/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ mkdir -p ~/.local/bin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后从官方GitHub仓库的&lt;a href="https://github.com/gohugoio/hugo/releases/">Release&lt;/a>页面下载所需的二进制包放入&lt;code>~/.local/bin/&lt;/code>目录下即可。需要注意的是，目前Hugo官方提供两种二进制包，&lt;code>hugo&lt;/code>和&lt;code>hugo_extended&lt;/code>，其中后者提供了对&lt;code>SASS/SCSS&lt;/code>的支持，可以看做是hugo的增强版。本博客使用的&lt;code>hugo-theme-diary&lt;/code>主题用到了前述的增强功能，故需要使用&lt;code>hugo_extended&lt;/code>二进制包。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hugo version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.101.0-466fa43c16709b4483689930a4f9ac8add5c9f66+extended linux/amd64 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>BuildDate&lt;span style="color:#f92672">=&lt;/span>2022-06-16T07:09:16Z VendorInfo&lt;span style="color:#f92672">=&lt;/span>gohugoio
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>到这里，Hugo的安装就已经完成了。&lt;/p>
+&lt;h1 id="hugo的使用">Hugo的使用&lt;/h1>
+&lt;p>先看看帮助：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hugo -h
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo is the main command, used to build your Hugo site.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Hugo is a Fast and Flexible Static Site Generator
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>built with love by spf13 and friends in Go.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Complete documentation is available at https://gohugo.io/.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Usage:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hugo &lt;span style="color:#f92672">[&lt;/span>flags&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hugo &lt;span style="color:#f92672">[&lt;/span>command&lt;span style="color:#f92672">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Available Commands:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> completion Generate the autocompletion script &lt;span style="color:#66d9ef">for&lt;/span> the specified shell
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> config Print the site configuration
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> convert Convert your content to different formats
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> deploy Deploy your site to a Cloud provider.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> env Print Hugo version and environment info
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> gen A collection of several useful generators.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> help Help about any command
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> import Import your site from others.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> list Listing out various types of content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> mod Various Hugo Modules helpers.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> new Create new content &lt;span style="color:#66d9ef">for&lt;/span> your site
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> server A high performance webserver
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> version Print the version number of Hugo
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;中略&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Use &lt;span style="color:#e6db74">&amp;#34;hugo [command] --help&amp;#34;&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> more information about a command.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="1-新建站点">1. 新建站点&lt;/h2>
+&lt;p>在这里，我们使用&lt;code>hugo new site&lt;/code>命令新建一个&lt;code>blog&lt;/code>站点，Hugo会帮我们在当前目录下新建&lt;code>blog&lt;/code>文件夹并完成相关初始化操作。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hugo new site blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Congratulations! Your new Hugo site is created in /tmp/blog.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Just a few more steps and you&lt;span style="color:#960050;background-color:#1e0010">&amp;#39;&lt;/span>re ready to go:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1. Download a theme into the same-named folder.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Choose a theme from https://themes.gohugo.io/ or
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> create your own with the &lt;span style="color:#e6db74">&amp;#34;hugo new theme &amp;lt;THEMENAME&amp;gt;&amp;#34;&lt;/span> command.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2. Perhaps you want to add some content. You can add single files
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> with &lt;span style="color:#e6db74">&amp;#34;hugo new &amp;lt;SECTIONNAME&amp;gt;/&amp;lt;FILENAME&amp;gt;.&amp;lt;FORMAT&amp;gt;&amp;#34;&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3. Start the built-in live server via &lt;span style="color:#e6db74">&amp;#34;hugo server&amp;#34;&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Visit https://gohugo.io/ &lt;span style="color:#66d9ef">for&lt;/span> quickstart guide and full documentation.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ cd blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ tree
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── archetypes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   └── default.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── data
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── layouts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── static
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>└── themes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">7&lt;/span> directories, &lt;span style="color:#ae81ff">2&lt;/span> files
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="2-添加主题">2. 添加主题&lt;/h2>
+&lt;p>可以发现，Hugo不同于其他的静态网页生成器，默认并没有自带主题(&lt;code>themes&lt;/code>文件夹为空)，需要自行添加。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ pwd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/tmp/blog
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ git clone https://github.com/AmazingRise/hugo-theme-diary.git themes/diary
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Cloning into &lt;span style="color:#e6db74">&amp;#39;themes/diary&amp;#39;&lt;/span>...
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Enumerating objects: 1477, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Counting objects: 100% &lt;span style="color:#f92672">(&lt;/span>416/416&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Compressing objects: 100% &lt;span style="color:#f92672">(&lt;/span>97/97&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>remote: Total &lt;span style="color:#ae81ff">1477&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 342&lt;span style="color:#f92672">)&lt;/span>, reused &lt;span style="color:#ae81ff">327&lt;/span> &lt;span style="color:#f92672">(&lt;/span>delta 314&lt;span style="color:#f92672">)&lt;/span>, pack-reused &lt;span style="color:#ae81ff">1061&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Receiving objects: 100% &lt;span style="color:#f92672">(&lt;/span>1477/1477&lt;span style="color:#f92672">)&lt;/span>, 6.85 MiB | 3.14 MiB/s, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Resolving deltas: 100% &lt;span style="color:#f92672">(&lt;/span>780/780&lt;span style="color:#f92672">)&lt;/span>, &lt;span style="color:#66d9ef">done&lt;/span>.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ ls -l themes/diary
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">16&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-rw-r--r--. &lt;span style="color:#ae81ff">1&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">1060&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 LICENSE
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-rw-r--r--. &lt;span style="color:#ae81ff">1&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4520&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 README.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">2&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">24&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 archetypes
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">3&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">18&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 assets
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">3&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">18&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 docs
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">5&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">72&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 exampleSite
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">2&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">119&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 i18n
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">2&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">147&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 images
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">5&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">111&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 layouts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">3&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">18&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 resources
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x. &lt;span style="color:#ae81ff">5&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">59&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 static
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-rw-r--r--. &lt;span style="color:#ae81ff">1&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">521&lt;/span> Jul &lt;span style="color:#ae81ff">2&lt;/span> 21:38 theme.toml
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="3-搭建完成">3. 搭建完成&lt;/h2>
+&lt;p>可以看到，主题的作者已经为我们准备了一个示例站点&lt;code>exampleSite&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ tree themes/diary/exampleSite
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>themes/diary/exampleSite
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   └── posts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   ├── chapter-1.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   ├── chapter-6.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   ├── chinese.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   ├── post-1.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   └── post-5.md
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>├── layouts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   └── partials
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>│   └── extended_head.html
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>└── resources
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> └── _gen
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> └── assets
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> └── scss
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> └── scss
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ├── dark-mode.scss_48b060fe05b0a273d182ef83c0605941.content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ├── dark-mode.scss_48b060fe05b0a273d182ef83c0605941.json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ├── journal.scss_48b060fe05b0a273d182ef83c0605941.content
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> └── journal.scss_48b060fe05b0a273d182ef83c0605941.json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">9&lt;/span> directories, &lt;span style="color:#ae81ff">11&lt;/span> files
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用&lt;code>hugo server&lt;/code>命令预览站点。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hugo server --themesDir ../..
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start building sites …
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hugo v0.101.0-466fa43c16709b4483689930a4f9ac8add5c9f66+extended linux/amd64 &lt;span style="color:#ae81ff">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#ae81ff">&lt;/span>BuildDate&lt;span style="color:#f92672">=&lt;/span>2022-06-16T07:09:16Z VendorInfo&lt;span style="color:#f92672">=&lt;/span>gohugoio
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | EN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-------------------+-----
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Pages | &lt;span style="color:#ae81ff">31&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Paginator pages | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Non-page files | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Static files | &lt;span style="color:#ae81ff">12&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Processed images | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Aliases | &lt;span style="color:#ae81ff">13&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Sitemaps | &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Cleaned | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Built in &lt;span style="color:#ae81ff">138&lt;/span> ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Watching &lt;span style="color:#66d9ef">for&lt;/span> changes in /tmp/blog/&lt;span style="color:#f92672">{&lt;/span>archetypes,assets,exampleSite,i18n,layouts,static&lt;span style="color:#f92672">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Watching &lt;span style="color:#66d9ef">for&lt;/span> config changes in /tmp/blog/config.toml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Environment: &lt;span style="color:#e6db74">&amp;#34;development&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Serving pages from memory
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Running in Fast Render Mode. For full rebuilds on change: hugo server --disableFastRender
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Web Server is available at http://localhost:1313/ &lt;span style="color:#f92672">(&lt;/span>bind address 127.0.0.1&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Press Ctrl+C to stop
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>用浏览器访问&lt;code>http://localhost:1313/&lt;/code>，可以看到：&lt;/p>
+&lt;p>&lt;img src="https://trustywolf.xyz/images/0x00-hello-world/examplesite.webp" alt="exampleSite">&lt;/p>
+&lt;p>按住&lt;code>Ctrl+C&lt;/code>取消预览，并使用&lt;code>hugo&lt;/code>命令生成站点，生成的静态文件在&lt;code>public&lt;/code>目录下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ hugo --minify
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Start building sites …
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> | EN
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-------------------+-----
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Pages | &lt;span style="color:#ae81ff">13&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Paginator pages | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Non-page files | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Static files | &lt;span style="color:#ae81ff">23&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Processed images | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Aliases | &lt;span style="color:#ae81ff">6&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Sitemaps | &lt;span style="color:#ae81ff">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Cleaned | &lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Total in &lt;span style="color:#ae81ff">1318&lt;/span> ms
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ ls -l public
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>total &lt;span style="color:#ae81ff">88&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxrwxr-x &lt;span style="color:#ae81ff">6&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 categories
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">2&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 01:52 images
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-rw-rw-r-- &lt;span style="color:#ae81ff">1&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">19544&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 index.html
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-rw-rw-r-- &lt;span style="color:#ae81ff">1&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">28875&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 index.xml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">2&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 01:52 js
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxrwxr-x &lt;span style="color:#ae81ff">3&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 page
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxrwxr-x &lt;span style="color:#ae81ff">8&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 posts
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxrwxr-x &lt;span style="color:#ae81ff">2&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 scss
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>-rw-rw-r-- &lt;span style="color:#ae81ff">1&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">2265&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 sitemap.xml
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxrwxr-x &lt;span style="color:#ae81ff">9&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 02:52 tags
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>drwxr-xr-x &lt;span style="color:#ae81ff">4&lt;/span> trustywolf trustywolf &lt;span style="color:#ae81ff">4096&lt;/span> Oct &lt;span style="color:#ae81ff">10&lt;/span> 01:52 vendor
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>至此，基础的安装搭建工作全部完成。&lt;/p>
+&lt;hr>
+&lt;h1 id="typography">Typography&lt;/h1>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span># H1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">## H2
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">### H3
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#### H4
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">##### H5
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">###### H6
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>H1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>===
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>H2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>---
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="heading-1">Heading 1&lt;/h1>
+&lt;p>我能吞下玻璃而不伤身体。I can eat glass, it doesn&amp;rsquo;t hurt me.&lt;/p>
+&lt;h2 id="heading-2">Heading 2&lt;/h2>
+&lt;p>我能吞下玻璃而不伤身体。I can eat glass, it doesn&amp;rsquo;t hurt me.&lt;/p>
+&lt;h3 id="heading-3">Heading 3&lt;/h3>
+&lt;p>我能吞下玻璃而不伤身体。I can eat glass, it doesn&amp;rsquo;t hurt me.&lt;/p>
+&lt;h4 id="heading-4">Heading 4&lt;/h4>
+&lt;p>我能吞下玻璃而不伤身体。I can eat glass, it doesn&amp;rsquo;t hurt me.&lt;/p>
+&lt;h5 id="heading-5">Heading 5&lt;/h5>
+&lt;p>我能吞下玻璃而不伤身体。I can eat glass, it doesn&amp;rsquo;t hurt me.&lt;/p>
+&lt;h6 id="heading-6">Heading 6&lt;/h6>
+&lt;p>我能吞下玻璃而不伤身体。I can eat glass, it doesn&amp;rsquo;t hurt me.&lt;/p>
+&lt;h2 id="styling-text">Styling text&lt;/h2>
+&lt;h3 id="bold">Bold&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>** **&lt;/code> or &lt;code>__ __&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;strong>This is bold text&lt;/strong>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="italic">Italic&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>* *&lt;/code> or &lt;code>_ _&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;em>This text is italicized&lt;/em>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="strikethrough">Strikethrough&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>~~ ~~&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;del>This was mistaken text&lt;/del>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="bold-and-nested-italic">Bold and nested italic&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>** **&lt;/code> and &lt;code>_ _&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;strong>This text is &lt;em>extremely&lt;/em> important&lt;/strong>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="all-bold-and-italic">All bold and italic&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>*** ***&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;em>&lt;strong>All this text is important&lt;/strong>&lt;/em>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="quoting-text">Quoting text&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>&amp;gt; Text that is a quote&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;blockquote>
+&lt;p>Text that is a quote&lt;/p>
+&lt;/blockquote>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="quoting-code">Quoting code&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>Use &lt;span style="color:#e6db74">`git status`&lt;/span> to list all new or modified files that haven&amp;#39;t yet been committed.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>Use &lt;code>git status&lt;/code> to list all new or modified files that haven&amp;rsquo;t yet been committed.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>To format code or text into its own distinct block, use triple backticks.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;pre tabindex="0">&lt;code>```
+git status
+git add
+git commit
+```
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;pre tabindex="0">&lt;code>git status
+git add
+git commit
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ul>
+&lt;h2 id="links">Links&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>This site was built using [GitHub Pages](https://pages.github.com/).&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>This site was built using &lt;a href="https://pages.github.com/">GitHub Pages&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="relative-links">Relative links&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>[Contribution guidelines for this project](docs/CONTRIBUTING.md)&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;a href="docs/CONTRIBUTING.md">Contribution guidelines for this project&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>The path of the link will be relative to the current file. Links starting with &lt;code>/&lt;/code> will be relative to the repository root. You can use all relative link operands, such as &lt;code>./&lt;/code> and &lt;code>../&lt;/code>.&lt;/p>
+&lt;h2 id="images">Images&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>![This is an image](https://myoctocat.com/assets/images/base-octocat.svg)&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>&lt;img src="https://myoctocat.com/assets/images/base-octocat.svg" alt="This is an image">&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="lists">Lists&lt;/h2>
+&lt;p>You can make an unordered list by preceding one or more lines of text with &lt;code>-&lt;/code> or &lt;code>*&lt;/code>.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">-&lt;/span> George Washington
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">-&lt;/span> John Adams
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">-&lt;/span> Thomas Jefferson
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;ul>
+&lt;li>George Washington&lt;/li>
+&lt;li>John Adams&lt;/li>
+&lt;li>Thomas Jefferson&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>To order your list, precede each line with a number.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">1.&lt;/span> James Madison
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">2.&lt;/span> James Monroe
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">3.&lt;/span> John Quincy Adams
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;ol>
+&lt;li>James Madison&lt;/li>
+&lt;li>James Monroe&lt;/li>
+&lt;li>John Quincy Adams&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="nested-lists">Nested Lists&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">1.&lt;/span> First list item
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">-&lt;/span> First nested list item
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">-&lt;/span> Second nested list item
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;ol>
+&lt;li>First list item
+&lt;ul>
+&lt;li>First nested list item
+&lt;ul>
+&lt;li>Second nested list item&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="task-lists">Task lists&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">- [x]&lt;/span> #739
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">- [ ]&lt;/span> https://github.com/octo-org/octo-repo/issues/740
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">- [ ]&lt;/span> Add delight to the experience when all tasks are complete
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;ul>
+&lt;li>&lt;input checked="" disabled="" type="checkbox"> #739&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> &lt;a href="https://github.com/octo-org/octo-repo/issues/740">https://github.com/octo-org/octo-repo/issues/740&lt;/a>&lt;/li>
+&lt;li>&lt;input disabled="" type="checkbox"> Add delight to the experience when all tasks are complete&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;p>If a task list item description begins with a parenthesis, you&amp;rsquo;ll need to escape it with &lt;code>\&lt;/code>:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>- [ ] \(Optional) Open a followup issue&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;ul>
+&lt;li>&lt;input disabled="" type="checkbox"> (Optional) Open a followup issue&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="paragraphs">Paragraphs&lt;/h2>
+&lt;p>You can create a new paragraph by leaving a blank line between lines of text.&lt;/p>
+&lt;h2 id="footnotes">Footnotes&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>Here is a simple footnote[^1].
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>A footnote can also have multiple lines[^2].
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[^1]: My reference.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[^2]: Every new line should be prefixed with 2 spaces.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> This allows you to have a footnote with multiple lines.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>Here is a simple footnote&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>.&lt;/p>
+&lt;p>A footnote can also have multiple lines&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="ignoring-markdown-formatting">Ignoring Markdown formatting&lt;/h2>
+&lt;p>You can ignore (or escape) Markdown formatting by using &lt;code>\&lt;/code> before the Markdown character.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;p>&lt;code>Let's rename \*our-new-project\* to \*our-old-project\*.&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;p>Let&amp;rsquo;s rename *our-new-project* to *our-old-project*.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="tables">Tables&lt;/h2>
+&lt;p>You can create tables with pipes &lt;code>|&lt;/code> and hyphens &lt;code>-&lt;/code>. Hyphens are used to create each column&amp;rsquo;s header, while pipes separate each column. You must include a blank line before your table in order for it to correctly render.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>| Command | Description |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| --- | --- |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#e6db74">`git status`&lt;/span> | List all &lt;span style="font-style:italic">*new or modified*&lt;/span> files |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| &lt;span style="color:#e6db74">`git diff`&lt;/span> | Show file differences that &lt;span style="font-weight:bold">**haven&amp;#39;t been**&lt;/span> staged |
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Command&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>git status&lt;/code>&lt;/td>
+&lt;td>List all &lt;em>new or modified&lt;/em> files&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>git diff&lt;/code>&lt;/td>
+&lt;td>Show file differences that &lt;strong>haven&amp;rsquo;t been&lt;/strong> staged&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;/li>
+&lt;/ul>
+&lt;p>The pipes on either end of the table are optional.&lt;/p>
+&lt;p>Cells can vary in width and do not need to be perfectly aligned within columns. There must be at least three hyphens in each column of the header row.&lt;/p>
+&lt;p>You can align text to the left, right, or center of a column by including colons &lt;code>:&lt;/code> to the left, right, or on both sides of the hyphens within the header row.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>| Left-aligned | Center-aligned | Right-aligned |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| :--- | :---: | ---: |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| git status | git status | git status |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| git diff | git diff | git diff |
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th style="text-align:left">Left-aligned&lt;/th>
+&lt;th style="text-align:center">Center-aligned&lt;/th>
+&lt;th style="text-align:right">Right-aligned&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td style="text-align:left">git status&lt;/td>
+&lt;td style="text-align:center">git status&lt;/td>
+&lt;td style="text-align:right">git status&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td style="text-align:left">git diff&lt;/td>
+&lt;td style="text-align:center">git diff&lt;/td>
+&lt;td style="text-align:right">git diff&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;/li>
+&lt;/ul>
+&lt;p>To include a pipe &lt;code>|&lt;/code> as content within your cell, use a &lt;code>\&lt;/code> before the pipe:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Syntax&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-markdown" data-lang="markdown">&lt;span style="display:flex;">&lt;span>| Name | Character |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| --- | --- |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Backtick | ` |
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Pipe | \| |
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Example&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Name&lt;/th>
+&lt;th>Character&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Backtick&lt;/td>
+&lt;td>`&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Pipe&lt;/td>
+&lt;td>|&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;/li>
+&lt;/ul>
+&lt;div class="footnotes" role="doc-endnotes">
+&lt;hr>
+&lt;ol>
+&lt;li id="fn:1">
+&lt;p>My reference.&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:2">
+&lt;p>Every new line should be prefixed with 2 spaces.&lt;br>
+This allows you to have a footnote with multiple lines.&amp;#160;&lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/div>
+- https://trustywolf.xyz/posts/0x00-hello-world/ - 2014-2022 Wolf Network Lab.</description></item></channel></rss>
